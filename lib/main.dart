@@ -27,14 +27,6 @@ class _RandomWordsState extends State<RandomWords> {
   final _saved = Set<WordPair>(); // NEW
   final List<WordPair> _suggestions = <WordPair>[]; // NEW
 
-  // void changePage(BuildContext ctx) {
-  //   Navigator.of(ctx).push(MaterialPageRoute(
-  //     builder: (_) {
-  //       return SavePage(_biggerFont, _saved);
-  //     },
-  //   ));
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,30 +99,34 @@ class _RandomWordsState extends State<RandomWords> {
       MaterialPageRoute<void>(
           // NEW lines from here...
           builder: (BuildContext context) {
-        final tiles = _saved.map(
-          (WordPair pair) {
-            return ListTile(
-              onTap: () {
-                _saved.remove(pair);
-                setState(() {
-                  print(_saved);
-                });
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final tiles = _saved.map(
+              (WordPair pair) {
+                return ListTile(
+                  onTap: () {
+                    setState(() {
+                      _saved.remove(pair);
+                      print(_saved);
+                    });
+                  },
+                  title: Text(
+                    pair.asPascalCase,
+                    style: _biggerFont,
+                  ),
+                  trailing: Icon(Icons.highlight_remove_outlined),
+                );
               },
-              title: Text(
-                pair.asPascalCase,
-                style: _biggerFont,
-              ),
-              trailing: Icon(Icons.highlight_remove_outlined),
             );
+            final divided = ListTile.divideTiles(
+              context: context,
+              tiles: tiles,
+            ).toList();
+
+            return _alreadySaved(divided); // ...to here.
           },
         );
-        final divided = ListTile.divideTiles(
-          context: context,
-          tiles: tiles,
-        ).toList();
-
-        return _alreadySaved(divided); // ...to here.
       }),
-    );
+    ).then((value) => setState(() {}));
   }
 }
